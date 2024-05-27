@@ -1,0 +1,138 @@
+﻿@page "/create-order"
+@using Client.Infrastructure.Services
+
+@attribute [Authorize]
+
+<section class="section sign-in">
+    <div class="login-box">
+    <div class="login-header">
+        <header>Авторизация</header>
+    </div>
+    <EditForm Model="_request" OnValidSubmit="SubmitFormAsync">
+        <DataAnnotationsValidator/>
+        <div class="input-box">
+            <InputSelect class="input-field" placeholder="Тип груза" @bind-Value="_request.ProductTypeId">
+                @if (_request.ProductTypeId == 0)
+                {
+                    <option value="0" selected>Не выбрано</option>
+                }
+                
+                @foreach (var productType in _productTypesList)
+                {
+                    <option value="@productType.Id">
+                        @productType.Name
+                        <br/>
+                        Цена за КГ: @productType.PriceForOneKG
+                        <br/>
+                        Цена за доставку: @productType.PriceForDelivery
+                    </option>
+                }
+            </InputSelect>
+            <ValidationMessage For="() => _request.ProductTypeId"/>
+        </div>
+        
+        <div class="input-box">
+            <InputTextArea style="height: 300px" class="input-field" placeholder="Описание груза и комментарий заказчика" @bind-Value="_request.Description"/>
+            <ValidationMessage For="() => _request.Description"/>
+        </div>
+        
+        <div class="input-box">
+            <InputNumber class="input-field" placeholder="Вес груза" @bind-Value="_request.Weight"/>
+            <ValidationMessage For="() => _request.Weight"/>
+        </div>
+        
+        <div class="input-box">
+            <InputText class="input-field" type="text" placeholder="Откуда" @bind-Value="_request.From"/>
+            <ValidationMessage For="() => _request.From"/>
+        </div>
+        
+        <div class="input-box">
+            <InputText class="input-field" type="text" placeholder="Куда" @bind-Value="_request.To"/>
+            <ValidationMessage For="() => _request.To"/>
+        </div>
+        
+        <div class="input-submit">
+            <button class="submit-btn" id="submit"></button>
+            <label for="submit">Создать заказ</label>
+        </div>
+        
+    </EditForm>
+    </div>
+</section>
+
+@code {
+    [Inject] IOrderManager OrderManager { get; set; } = default!;
+    [Inject] IProductTypeManager ProductTypeManager { get; set; } = default!;
+    [Inject] IJSRuntime JsRuntime { get; set; } = default!;
+    [Inject] NavigationManager NavigationManager { get; set; } = default!;
+    [Inject] ITokenService TokenService { get; set; } = default!;
+
+    
+    
+    private CreateOrderRequest _request = new();
+    private bool _isBusy;
+    private List<ProductTypeResponse> _productTypesList = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        await LoadDataAsync();
+    }
+
+    private async Task LoadDataAsync()
+    {
+        try
+        {
+            _isBusy = true;
+
+            var result = await ProductTypeManager.GetAllAsync();
+            if (!result.Succeeded)
+            {
+                foreach (var message in result.Messages)
+                    await JsRuntime.InvokeVoidAsync("alert", message);
+                return;
+            }
+
+            _productTypesList = [..result.Data];
+        }
+        catch (Exception ex)
+        {
+            await JsRuntime.InvokeVoidAsync("alert", ex.Message);
+        }
+        finally
+        {
+            _isBusy = false;
+        }
+    }
+    
+    private async Task SubmitFormAsync()
+    {
+        try
+        {
+            _isBusy = true;
+
+            var token = await TokenService.GetAuthTokenAsync();
+            var userId = Guid.Parse(TokenService.GetUserIdFromAuthToken(token));
+            _request.CreatorId = userId;
+            var result = await OrderManager.CreateAsync(_request);
+            if (!result.Succeeded)
+            {
+                foreach (var message in result.Messages)
+                    await JsRuntime.InvokeVoidAsync("alert", message);
+                return;
+            }
+            foreach (var message in result.Messages)
+                await JsRuntime.InvokeVoidAsync("alert", message);
+            NavigationManager.NavigateTo("/my-orders", true, true);
+        }
+        catch (Exception ex)
+        {
+            await JsRuntime.InvokeVoidAsync("alert", ex.Message);
+        }
+        finally
+        {
+            _isBusy = false;
+        }
+    }
+
+}

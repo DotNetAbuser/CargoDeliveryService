@@ -1,0 +1,67 @@
+﻿@page "/sign-in"
+
+<PageTitle>Авторизация</PageTitle>
+
+<section class="section sign-in">
+    <div class="login-box">
+    <div class="login-header">
+        <header>Авторизация</header>
+    </div>
+    <EditForm Model="_request" OnValidSubmit="SubmitFormAsync">
+        <DataAnnotationsValidator/>
+        <div class="input-box">
+            <InputText class="input-field" type="text" placeholder="Номер телефона" @bind-Value="_request.PhoneNumber"/>
+            <ValidationMessage For="() => _request.PhoneNumber"/>
+        </div>
+        <div class="input-box">
+            <InputText class="input-field" type="password" placeholder="Пароль" @bind-Value="_request.Password"/>
+            <ValidationMessage For="() => _request.Password"/>
+        </div>
+        <div class="input-submit">
+            <button class="submit-btn" id="submit"></button>
+            <label for="submit">Войти</label>
+        </div>
+ 
+        <div class="sign-up-link">
+            <p>Ещё не зарегистрированны? <a href="/sign-up">Регистрация</a></p>
+        </div>
+    </EditForm>
+    </div>
+</section>
+
+@code{
+    [Inject] ITokenManager TokenManager { get; set; } = default!;
+    [Inject] NavigationManager NavigationManager { get; set; } = default!;
+    [Inject] IJSRuntime JsRuntime { get; set; } = default!;
+
+    private SignInRequest _request = new();
+    private bool _isBusy;
+
+    private async Task SubmitFormAsync()
+    {
+        try
+        {
+            _isBusy = true;
+
+            var result = await TokenManager.SignInAsync(_request);
+            if (!result.Succeeded)
+            {
+                foreach (var message in result.Messages)
+                    await JsRuntime.InvokeVoidAsync("alert", message); 
+                return;
+            }
+            foreach (var message in result.Messages)
+                await JsRuntime.InvokeVoidAsync("alert", message); 
+            NavigationManager.NavigateTo("/", true,true);
+        }
+        catch (Exception ex)
+        {
+            await JsRuntime.InvokeVoidAsync("alert", ex.Message);
+        }
+        finally
+        {
+            _isBusy = false;
+        }
+    }
+
+}

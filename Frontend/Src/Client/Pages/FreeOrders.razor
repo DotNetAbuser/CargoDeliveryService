@@ -1,0 +1,119 @@
+﻿@page "/free-orders"
+@using Client.Infrastructure.Services
+
+<section class="section my-requests">
+    <div class="container">
+        
+        <h1 class="h2 card-title">Взять заказ</h1> 
+        
+        <div class="card-container">
+               @foreach (var order in _ordersList) 
+               {
+                   <div class="card">
+                       <div>
+                           <h1>Заказчик:</h1>
+                       </div>
+                       <div class="creator-fullname">
+                           <h1>@order.CreatorLastName</h1>
+                           <h1>@order.CreatorFirstName</h1>
+                           <h1>@order.CreatorMiddleName</h1>
+                       </div>
+                       <h1>Тип перевозимого груза: @order.ProductTypeName</h1>
+                       <div class="location">
+                           <h1> Откуда: @order.From</h1>
+                           <h1> Куда: @order.To</h1>
+                       </div>
+                     
+                       <hr/>
+                       <div class="created">
+                           <h1>Создана: @order.Created.ToLocalTime().ToString("dd.MM.yyyy HH:mm")</h1>
+                       </div>
+                       <div class="button-container">
+                           <button class="btn" @onclick="async () => await AcceptOrderAsync(order.Id)">Принять</button>
+                       </div>
+                   </div>
+               }
+        </div>
+     
+
+        
+        
+    </div>
+</section>
+
+@code {
+    [Inject] IOrderManager OrderManager { get; set; } = default!;
+    [Inject] IJSRuntime JsRuntime { get; set; } = default!;
+    [Inject] ITokenService TokenService { get; set; } = default!;
+    [Inject] NavigationManager NavigationManager { get; set; } = default!;
+
+
+    private List<OrderResponse> _ordersList = [];
+    private bool _isBusy;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        await LoadDataAsync();
+    }
+
+    private async Task AcceptOrderAsync(Guid id)
+    {
+        try
+        {
+            _isBusy = true;
+            var token = await TokenService.GetAuthTokenAsync();
+            var userId = Guid.Parse(TokenService.GetUserIdFromAuthToken(token));
+            var request = new TakeOrderRequest {
+                DriverId = userId
+            };
+            var result = await OrderManager.TakeOrderAsync(id, request);
+            if (!result.Succeeded)
+            {
+                foreach (var message in result.Messages)
+                    await JsRuntime.InvokeVoidAsync("alert", message);
+                return;
+            }
+            foreach (var message in result.Messages)
+                await JsRuntime.InvokeVoidAsync("alert", message);
+            NavigationManager.NavigateTo("/my-orders", true, true);
+        }
+        catch (Exception ex)
+        {
+            await JsRuntime.InvokeVoidAsync("alert", ex.Message);
+        }
+        finally
+        {
+            _isBusy = false;
+        }
+    }
+    
+    private async Task LoadDataAsync()
+    {
+        try
+        {
+            _isBusy = true;
+
+            var result = await OrderManager.GetFreeOrdersAsync();
+            if (!result.Succeeded)
+            {
+                foreach (var message in result.Messages)
+                    await JsRuntime.InvokeVoidAsync("alert", message);
+                return;
+            }
+
+            foreach (var order in result.Data)
+                _ordersList.Add(order);
+        }
+        catch (Exception ex)
+        {
+            await JsRuntime.InvokeVoidAsync("alert", ex.Message);
+        }
+        finally
+        {
+            _isBusy = false;
+        }
+    }
+
+
+}

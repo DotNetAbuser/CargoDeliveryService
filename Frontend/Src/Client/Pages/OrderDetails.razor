@@ -1,0 +1,123 @@
+﻿@page "/my-orders/{Id:guid}"
+
+<section class="section my-requests">
+    <div class="container">
+        @if (_model != null)
+        {
+            <h1>Номер заказа: @_model.Id</h1>
+            <h1>ФИО Заказчика</h1>
+            <h1>@_model.CreatorLastName @_model.CreatorFirstName @_model.CreatorMiddleName</h1>
+            <h1>Номер телефона: @_model.CreatorPhoneNumber</h1>
+            <h1>ФИО Водителя</h1>
+            @if (string.IsNullOrWhiteSpace(_model.DriverFirstName)) {
+                <h1>Водитель ещё не найден</h1>
+            }
+            else {
+                <h1>@_model.DriverLastName @_model.DriverFirstName @_model.DriverMiddleName</h1>
+            }
+            <h1>Комментарий заказчика:</h1>
+            <h1>@_model.Description</h1>
+            <h1>Откуда: @_model.From</h1>
+            <h1>Куда: @_model.To</h1>
+            <h1>Итоговоая цена: @_model.TotalPrice руб</h1>
+            <div class="is-payed">
+                <h1>@_model.DriverPhoneNumber</h1>
+                <h1>Статус оплаты:
+                    @if (_model.IsPayed)
+                    {
+                        <span>Оплачено</span>
+                    }
+                    else
+                    {
+                        <span>Ожидается оплата</span>
+                    }
+                </h1>
+            </div>
+            
+            <h1>Создана: @_model.Created.ToLocalTime().ToString("dd.MM.yyyy HH:mm")</h1>
+
+            if (!_model.IsPayed)
+            {
+                <AuthorizeView Roles="Driver">
+                    <Authorized>
+                        <button class="btn" @onclick="async () => await ChangePayedStatusAsync(Id)">Подтвердить оплату</button>
+                    </Authorized>
+                </AuthorizeView>
+            }
+        }
+    </div>
+</section>
+
+
+@code {
+    [Parameter] public Guid Id { get; set; }
+    [Inject] IOrderManager OrderManager { get; set; } = default!;
+    [Inject] IJSRuntime JsRuntime { get; set; } = default!;
+    [Inject] NavigationManager NavigationManager { get; set; } = default!;
+
+    private OrderResponse _model;
+    private bool _isBusy;
+ 
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        await LoadDataAsync();
+    }
+
+    private async Task ChangePayedStatusAsync(Guid id)
+    {
+        try
+        {
+            _isBusy = true;
+            
+            var request = new ChangePaymentStatusRequest {
+                IsPayed = true
+            };
+            var result = await OrderManager.ChangePaymentStatusAsync(id, request);
+            if (!result.Succeeded) 
+            {
+                foreach (var message in result.Messages)
+                    await JsRuntime.InvokeVoidAsync("alert", message);
+                return;
+            }
+            foreach (var message in result.Messages)
+                await JsRuntime.InvokeVoidAsync("alert", message);
+            NavigationManager.NavigateTo($"/my-orders/{id}", true, true);
+        }
+        catch (Exception ex)
+        {
+            await JsRuntime.InvokeVoidAsync("alert", ex.Message);
+        }
+        finally
+        {
+            _isBusy = false;
+        }
+    }
+    
+    private async Task LoadDataAsync()
+    {
+        try
+        {
+            _isBusy = true;
+
+            var result = await OrderManager.GetByIdAsync(Id);
+            if (!result.Succeeded)
+            {
+                foreach (var message in result.Messages)
+                    await JsRuntime.InvokeVoidAsync("alert", message);
+                return;
+            }
+
+            _model = result.Data;
+        }
+        catch (Exception ex)
+        {
+            await JsRuntime.InvokeVoidAsync("alert", ex.Message);
+        }
+        finally
+        {
+            _isBusy = false;
+        }
+    }
+
+}

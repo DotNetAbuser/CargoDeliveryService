@@ -1,0 +1,130 @@
+﻿<div class="container">
+
+  <h1>
+    <a href="/" class="logo">Перевозки Онлайн</a>
+  </h1>
+
+  <nav class="@_navBarState">
+
+    <div class="navbar-top">
+      <a href="/" class="logo">Перевозки Онлайн</a>
+
+      <button @onclick="ChangeMenuState" class="nav-close-btn">
+        <ion-icon name="close-outline"></ion-icon>
+      </button>
+    </div>
+
+    <ul class="navbar-list">
+      <li class="navbar-item">
+        <a href="/" class="navbar-link">
+          <span>Главная</span>
+
+          <ion-icon name="chevron-forward"></ion-icon>
+        </a>
+      </li>
+      
+      <AuthorizeView Roles="Guest">
+        <Authorized>
+          <li class="navbar-item">
+            <a href="/create-order" class="navbar-link">
+              <span>Создать заказ</span>
+              <ion-icon name="chevron-forward"></ion-icon>
+            </a>
+          </li>
+        </Authorized>
+      </AuthorizeView>
+      
+      <AuthorizeView Roles="Driver">
+        <Authorized>
+          <li class="navbar-item">
+            <a href="/free-orders" class="navbar-link">
+              <span>Выбор заказа</span>
+              <ion-icon name="chevron-forward"></ion-icon>
+            </a>
+          </li>
+        </Authorized>
+      </AuthorizeView>
+      
+      <AuthorizeView>
+        <Authorized>
+          <li class="navbar-item">
+            <a href="/my-orders" class="navbar-link">
+              <span>Мои заказы</span>
+              <ion-icon name="chevron-forward"></ion-icon>
+            </a>
+          </li>
+          <li class="navbar-item">
+            <a href="/sign-out" class="navbar-link">
+              <span>Выйти</span>
+
+              <ion-icon name="chevron-forward"></ion-icon>
+            </a>
+          </li>
+        </Authorized>
+        <NotAuthorized>
+          <li class="navbar-item">
+            <a href="/sign-in" class="navbar-link">
+              <span>Войти</span>
+
+              <ion-icon name="chevron-forward"></ion-icon>
+            </a>
+          </li>
+          <li class="navbar-item">
+            <a href="/sign-up" class="navbar-link">
+              <span>Регистрация</span>
+
+              <ion-icon name="chevron-forward"></ion-icon>
+            </a>
+          </li>
+        </NotAuthorized>
+      </AuthorizeView>
+    </ul>
+
+  </nav>
+
+  <div class="header-contact">
+
+    <div>
+      <p class="contact-label">24 часовая поддержка по номеру</p>
+
+      <a href="tel:+7(843)2315831" class="contact-number">+7(843)2315831</a>
+    </div>
+
+    <div class="contact-icon">
+      <ion-icon name="call-outline"></ion-icon>
+    </div>
+
+  </div>
+
+  <button @onclick="ChangeMenuState" class="nav-open-btn">
+    <ion-icon name="menu-outline"></ion-icon>
+  </button>
+
+  <div class="@_overlayState"></div>
+
+</div>
+
+@code{
+  private const string NavBarClass = "navbar";
+  private const string NavBarActiveClass = "navbar active";
+
+  private string _navBarState = NavBarClass;
+
+  private const string OverlayClass = "overlay";
+  private const string OverlayActiveClass = "overlay active";
+
+  private string _overlayState = OverlayClass;
+    
+  private void ChangeMenuState()
+  {
+    _navBarState = _navBarState == NavBarClass
+      ? NavBarActiveClass
+      : NavBarClass;
+
+    _overlayState = _overlayState == OverlayClass
+      ? OverlayActiveClass
+      : OverlayClass;
+  }
+  
+  
+}

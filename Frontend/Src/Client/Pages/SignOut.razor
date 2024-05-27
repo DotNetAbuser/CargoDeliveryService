@@ -1,0 +1,21 @@
+﻿@page "/sign-out"
+
+<section class="sign-in">
+    <div class="login-box">
+        <div class="login-header">
+            <header>Выход из системы...</header>
+        </div>
+    </div>
+</section>
+
+@code{
+    [Inject] CustomAuthenticationStateProvider CustomAuthStateProvider { get; set; } = default!;
+    [Inject] NavigationManager NavigationManager { get; set; } = default!;
+    
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        await CustomAuthStateProvider.MarkUserAsLoggedOut();
+        NavigationManager.NavigateTo("/", true, true);
+    }
+}

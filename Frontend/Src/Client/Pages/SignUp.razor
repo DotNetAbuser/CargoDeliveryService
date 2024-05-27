@@ -1,0 +1,109 @@
+﻿@page "/sign-up"
+
+<PageTitle>Регистрация</PageTitle>
+
+
+<section class="section sign-in">
+    <div class="login-box">
+    <div class="login-header">
+        <header>Регистрация</header>
+    </div>
+    <EditForm Model="_request" OnValidSubmit="SubmitFormAsync">
+        <DataAnnotationsValidator/>
+        <div class="input-box">
+            <InputText class="input-field" type="text" placeholder="Введите ваше фамилию" @bind-Value="_request.LastName"/>
+            <ValidationMessage For="() => _request.LastName"/>
+        </div>
+
+        <div class="input-box">
+            <InputText class="input-field" type="text" placeholder="Введите вашу имя" @bind-Value="_request.FirstName"/>
+            <ValidationMessage For="() => _request.FirstName"/>
+        </div>
+
+        <div class="input-box">
+            <InputText class="input-field" type="text" placeholder="Введите ваш отчество" @bind-Value="_request.MiddleName"/>
+            <ValidationMessage For="() => _request.MiddleName"/>
+        </div>
+
+        <div class="input-box">
+            <InputText class="input-field" type="email" placeholder="Введите эл. почта" @bind-Value="_request.Email"/>
+            <ValidationMessage For="() => _request.Email"/>
+        </div>
+
+        <div class="input-box">
+            <InputText class="input-field" type="phone" placeholder="Введите номер телефона" @bind-Value="_request.PhoneNumber"/>
+            <ValidationMessage For="() => _request.PhoneNumber"/>
+        </div>
+
+        <div class="input-box">
+            <InputText class="input-field" type="password" placeholder="Введите пароль" @bind-Value="_request.Password"/>
+            <ValidationMessage For="() => _request.Password"/>
+        </div>
+
+        <div class="input-box">
+            <InputText class="input-field" type="password" placeholder="Введите ещё раз пароль" @bind-Value="_request.ConfirmPassword"/>
+            <ValidationMessage For="() => _request.ConfirmPassword"/>
+        </div>
+        
+        <div class="input-box">
+            <label>Роль пользователя</label>
+            <InputRadioGroup @bind-Value="_request.RoleId"> 
+                <div class="input-radio">
+                    <InputRadio id="1radio" Value="1"/>
+                    <label for="1radio">Заказчик</label>
+                </div>
+                <div class="input-radio">
+                    <InputRadio id="2radio" Value="2" />
+                    <label for="2radio">Водитель</label>
+                </div>
+            </InputRadioGroup>
+        </div>
+        
+        
+        <div class="input-submit">
+            <button class="submit-btn" id="submit"></button>
+            <label for="submit">Зарегистрироваться</label>
+        </div>
+        <div class="sign-up-link">
+            <p>Уже с нами? <a href="/sign-in">Авторизация</a></p>
+        </div>
+    </EditForm>
+    </div>
+</section>
+
+@code {
+    [Inject] IUserManager UserManager { get; set; } = default!;
+    [Inject] NavigationManager NavigationManager { get; set; } = default!;
+    [Inject] IJSRuntime JsRuntime { get; set; } = default!;
+    
+    private SignUpRequest _request = new();
+    private bool _isBusy;
+
+
+    private async Task SubmitFormAsync()
+    {
+        try
+        {
+            _isBusy = true;
+
+            var result = await UserManager.CreateAsync(_request);
+            if (!result.Succeeded)
+            {
+                foreach (var message in result.Messages)
+                    await JsRuntime.InvokeVoidAsync("alert", message);
+                return;
+            }
+            foreach (var message in result.Messages)
+                await JsRuntime.InvokeVoidAsync("alert", message); 
+            NavigationManager.NavigateTo("/sign-in", true,true);
+        }
+        catch (Exception ex)
+        {
+            await JsRuntime.InvokeVoidAsync("alert", ex.Message);
+        }
+        finally
+        {
+            _isBusy = false;
+        }
+    }
+}
