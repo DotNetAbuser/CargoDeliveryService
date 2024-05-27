@@ -8,6 +8,7 @@ C:\Users\ilyao\Desktop\Projects\CargoDeliveryService\Frontend\Src\Client.Infrast
 C:\Users\ilyao\Desktop\Projects\CargoDeliveryService\Frontend\Src\Client.Infrastructure\obj\Debug\net8.0\Client.Infrastructure.AssemblyInfoInputs.cache
 C:\Users\ilyao\Desktop\Projects\CargoDeliveryService\Frontend\Src\Client.Infrastructure\obj\Debug\net8.0\Client.Infrastructure.AssemblyInfo.cs
 C:\Users\ilyao\Desktop\Projects\CargoDeliveryService\Frontend\Src\Client.Infrastructure\obj\Debug\net8.0\Client.Infrastructure.csproj.CoreCompileInputs.cache
+C:\Users\ilyao\Desktop\Projects\CargoDeliveryService\Frontend\Src\Client.Infrastructure\obj\Debug\net8.0\Client.Infrastructure.sourcelink.json
 C:\Users\ilyao\Desktop\Projects\CargoDeliveryService\Frontend\Src\Client.Infrastructure\obj\Debug\net8.0\Client.I.13AD723A.Up2Date
 C:\Users\ilyao\Desktop\Projects\CargoDeliveryService\Frontend\Src\Client.Infrastructure\obj\Debug\net8.0\Client.Infrastructure.dll
 C:\Users\ilyao\Desktop\Projects\CargoDeliveryService\Frontend\Src\Client.Infrastructure\obj\Debug\net8.0\refint\Client.Infrastructure.dll

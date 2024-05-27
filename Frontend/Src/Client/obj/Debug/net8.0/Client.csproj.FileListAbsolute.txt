@@ -672,6 +672,7 @@ C:\Users\ilyao\Desktop\Projects\CargoDeliveryService\Frontend\Src\Client\obj\Deb
 C:\Users\ilyao\Desktop\Projects\CargoDeliveryService\Frontend\Src\Client\obj\Debug\net8.0\Client.AssemblyInfo.cs
 C:\Users\ilyao\Desktop\Projects\CargoDeliveryService\Frontend\Src\Client\obj\Debug\net8.0\Client.csproj.CoreCompileInputs.cache
 C:\Users\ilyao\Desktop\Projects\CargoDeliveryService\Frontend\Src\Client\obj\Debug\net8.0\Client.MvcApplicationPartsAssemblyInfo.cache
+C:\Users\ilyao\Desktop\Projects\CargoDeliveryService\Frontend\Src\Client\obj\Debug\net8.0\Client.sourcelink.json
 C:\Users\ilyao\Desktop\Projects\CargoDeliveryService\Frontend\Src\Client\obj\Debug\net8.0\webcil\Blazicons.wasm
 C:\Users\ilyao\Desktop\Projects\CargoDeliveryService\Frontend\Src\Client\obj\Debug\net8.0\webcil\Blazicons.Ionicons.wasm
 C:\Users\ilyao\Desktop\Projects\CargoDeliveryService\Frontend\Src\Client\obj\Debug\net8.0\webcil\BlazorComponentUtilities.wasm
