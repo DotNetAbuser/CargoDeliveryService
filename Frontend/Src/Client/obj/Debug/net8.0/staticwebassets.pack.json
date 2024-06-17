@@ -97,6 +97,10 @@
       "PackagePath": "staticwebassets\\assets\\images\\project-6.jpg"
     },
     {
+      "Id": "C:\\Users\\ilyao\\Desktop\\Projects\\CargoDeliveryService\\Frontend\\Src\\Client\\wwwroot\\assets\\images\\sbp.png",
+      "PackagePath": "staticwebassets\\assets\\images\\sbp.png"
+    },
+    {
       "Id": "C:\\Users\\ilyao\\Desktop\\Projects\\CargoDeliveryService\\Frontend\\Src\\Client\\wwwroot\\assets\\images\\service-icon-1.png",
       "PackagePath": "staticwebassets\\assets\\images\\service-icon-1.png"
     },

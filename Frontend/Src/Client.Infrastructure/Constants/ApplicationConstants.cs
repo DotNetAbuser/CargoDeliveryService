@@ -3,5 +3,5 @@
 public class ApplicationConstants
 {
     public static string BaseClientName => "CargoDeliveryClient";
-    public static string BackendAddress => "http://localhost:5005/";
+    public static string BackendAddress => "http://194.67.67.140:6003/";
 }

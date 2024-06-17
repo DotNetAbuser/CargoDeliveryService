@@ -30,6 +30,11 @@
                     else
                     {
                         <span>Ожидается оплата</span>
+                        <AuthorizeView Roles="Guest">
+                            <Authorized>
+                                <img src="./assets/images/sbp.png" alt=""/>
+                            </Authorized>
+                        </AuthorizeView>
                     }
                 </h1>
             </div>
